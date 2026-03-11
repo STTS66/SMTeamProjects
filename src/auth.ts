@@ -88,7 +88,10 @@ if (googleOAuth) {
   providers.unshift(
     Google({
       clientId: googleOAuth.clientId,
-      clientSecret: googleOAuth.clientSecret
+      clientSecret: googleOAuth.clientSecret,
+      // Google returns verified emails, so we can safely link an existing
+      // credentials account that uses the same address.
+      allowDangerousEmailAccountLinking: true
     })
   );
 }

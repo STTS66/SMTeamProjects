@@ -48,6 +48,22 @@ export function getLoginErrorMessage(errorCode) {
     return "Доступ запрещён. Возможно, аккаунт заблокирован.";
   }
 
+  if (errorCode === "OAuthAccountNotLinked") {
+    return "Для этого email уже есть аккаунт. Теперь вход через Google разрешён, попробуйте ещё раз.";
+  }
+
+  if (errorCode === "OAuthSignin" || errorCode === "OAuthCallback") {
+    return "Не удалось завершить вход через Google. Попробуйте ещё раз через несколько секунд.";
+  }
+
+  if (errorCode === "CallbackRouteError") {
+    return "Google успешно открылся, но сайт не смог завершить вход. Попробуйте ещё раз.";
+  }
+
+  if (errorCode === "Configuration") {
+    return "Google OAuth настроен не полностью. Проверьте GOOGLE_CLIENT_ID и GOOGLE_CLIENT_SECRET.";
+  }
+
   return "Не удалось выполнить вход.";
 }
 
