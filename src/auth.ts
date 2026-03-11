@@ -9,7 +9,7 @@ import { ensureGoogleUsername } from "@/lib/usernames";
 import { loginSchema } from "@/lib/validations/auth";
 import { normalizeUsername } from "@/lib/utils";
 
-const providers = [
+const providers: any[] = [
   Credentials({
     name: "Email or username",
     credentials: {
@@ -81,7 +81,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: "jwt"
   },
@@ -176,3 +176,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   }
 });
+

@@ -11,7 +11,7 @@ const baseLinks = [
   { href: "/profile", label: "Профиль" }
 ] as const;
 
-export function AppNav({ role, username }: { role: "USER" | "ADMIN"; username: string | null }) {
+export function AppNav({ role = "USER", username = null }: { role?: "USER" | "ADMIN"; username?: string | null }) {
   const pathname = usePathname();
   const links = role === "ADMIN" ? [...baseLinks, { href: "/admin", label: "Админ" }] : baseLinks;
 
@@ -32,3 +32,4 @@ export function AppNav({ role, username }: { role: "USER" | "ADMIN"; username: s
     </header>
   );
 }
+
