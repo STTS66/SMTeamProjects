@@ -6,7 +6,7 @@ services:
     plan: free
     autoDeployTrigger: commit
     buildCommand: npm install --include=dev && npm run prisma:generate && npm run build
-    preDeployCommand: npm run prisma:deploy
+    preDeployCommand: npm run prisma:deploy:retry
     startCommand: npx next start -H 0.0.0.0 -p $PORT
     healthCheckPath: /login
     envVars:
@@ -15,6 +15,8 @@ services:
       - key: AUTH_TRUST_HOST
         value: "true"
       - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
         sync: false
       - key: AUTH_SECRET
         generateValue: true

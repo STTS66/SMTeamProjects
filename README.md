@@ -24,7 +24,7 @@
 ## Запуск
 
 1. Скопируйте .env.example в .env.
-2. Укажите DATABASE_URL и AUTH_SECRET.
+2. Укажите DATABASE_URL, DIRECT_URL и AUTH_SECRET.
 3. При необходимости добавьте GOOGLE_CLIENT_ID и GOOGLE_CLIENT_SECRET.
 4. Для загрузки файлов проектов добавьте SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY.
 5. При необходимости задайте SUPABASE_STORAGE_BUCKET, по умолчанию используется `smteam-files`.
@@ -46,12 +46,18 @@
 
 ## Render Deploy
 - `render.yaml` уже добавлен в репозиторий.
-- Set DATABASE_URL and AUTH_SECRET on Render.
+- Set `DATABASE_URL`, `DIRECT_URL` and `AUTH_SECRET` on Render.
 - Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to Render.
 - `SUPABASE_STORAGE_BUCKET` defaults to `smteam-files`.
 - To reseed admin on Render, set ADMIN_SEED_PASSWORD and run npm run prisma:seed.
-- The service runs prisma migrate deploy before next start.
+- The service runs `prisma migrate deploy` with retry before `next start`.
 - Set AUTH_URL only if you use a custom domain.
+
+### Neon + Prisma on Render
+
+Если вы используете Neon:
+- `DATABASE_URL` можно оставить pooled connection string для приложения.
+- `DIRECT_URL` нужно указать как direct connection string из Neon, без pooler, чтобы Prisma CLI мог выполнять миграции без проблем с advisory lock.
 
 ## Supabase Storage
 
