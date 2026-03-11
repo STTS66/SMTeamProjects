@@ -38,3 +38,19 @@ export function getAuthBaseUrl() {
 export function shouldTrustHost() {
   return process.env.AUTH_TRUST_HOST === "true" || process.env.RENDER === "true";
 }
+
+export function getSupabaseStorageConfig() {
+  const url = getRealValue(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const serviceRoleKey = getRealValue(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const bucket = getRealValue(process.env.SUPABASE_STORAGE_BUCKET) ?? "smteam-files";
+
+  if (!url || !serviceRoleKey) {
+    return null;
+  }
+
+  return {
+    url,
+    serviceRoleKey,
+    bucket
+  };
+}
