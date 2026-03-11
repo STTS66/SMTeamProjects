@@ -156,7 +156,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       token.sub = databaseUser.id;
       token.email = databaseUser.email;
       token.name = databaseUser.username ?? databaseUser.email;
-      token.picture = databaseUser.image ?? undefined;
+      token.picture = undefined;
       token.role = databaseUser.role;
       token.username = databaseUser.username;
       token.isBanned = databaseUser.isBanned;
@@ -173,7 +173,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.username =
         (token.username as string | null | undefined) ?? session.user.name ?? null;
       session.user.isBanned = Boolean(token.isBanned);
-      session.user.image = token.picture ?? session.user.image;
+      session.user.image = null;
 
       return session;
     },

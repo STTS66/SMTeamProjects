@@ -38,15 +38,26 @@ export function ProfileForm({
           event.preventDefault();
           setError("");
           const form = new FormData(event.currentTarget);
+
           start(async () => {
             const response = await fetch("/api/profile", {
               method: "POST",
               body: form
             });
             const data = (await response.json()) as { error?: string };
+
             if (!response.ok) {
               return setError(data.error ?? "Не удалось обновить профиль.");
             }
+
+            setPreviewUrl((current) => {
+              if (current) {
+                URL.revokeObjectURL(current);
+              }
+
+              return null;
+            });
+
             router.refresh();
           });
         }}

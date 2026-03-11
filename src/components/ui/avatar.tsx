@@ -1,4 +1,6 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 import { cx } from "@/lib/utils";
 
 const sizeClasses = {
@@ -6,19 +8,6 @@ const sizeClasses = {
   md: "avatar-md",
   lg: "avatar-lg"
 } as const;
-
-function getInitials(value: string | null | undefined) {
-  const normalized = value?.trim();
-
-  if (!normalized) {
-    return "SM";
-  }
-
-  const parts = normalized.split(/\s+/).slice(0, 2);
-  const initials = parts.map((part) => part[0]?.toUpperCase() ?? "").join("");
-
-  return initials || "SM";
-}
 
 export function Avatar({
   src,
@@ -31,18 +20,28 @@ export function Avatar({
   size?: keyof typeof sizeClasses;
   className?: string;
 }) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  const hasImage = Boolean(src) && !failed;
+
   return (
     <div className={cx("avatar", sizeClasses[size], className)}>
-      {src ? (
-        <Image
-          src={src}
-          alt={name ? `Аватар ${name}` : "Аватар пользователя"}
-          fill
-          sizes={size === "lg" ? "96px" : size === "md" ? "56px" : "40px"}
+      {hasImage ? (
+        <img
+          src={src ?? ""}
+          alt={name ? `Avatar ${name}` : "User avatar"}
           className="avatar-image"
+          onError={() => setFailed(true)}
         />
       ) : (
-        <span className="avatar-fallback">{getInitials(name)}</span>
+        <span className="avatar-placeholder" aria-hidden="true">
+          <span className="avatar-placeholder-head" />
+          <span className="avatar-placeholder-body" />
+        </span>
       )}
     </div>
   );

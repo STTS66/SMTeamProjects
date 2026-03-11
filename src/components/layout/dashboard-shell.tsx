@@ -4,17 +4,19 @@ import { AppNav } from "@/components/layout/app-nav";
 
 export function DashboardShell({
   children,
-  session
+  session,
+  userImage
 }: {
   children: ReactNode;
   session: Session;
+  userImage?: string | null;
 }) {
   return (
     <div className="dashboard-shell">
       <AppNav
         role={session.user.role}
         username={session.user.username}
-        image={session.user.image ?? null}
+        image={userImage ?? null}
       />
       <main className="content-shell">{children}</main>
     </div>
