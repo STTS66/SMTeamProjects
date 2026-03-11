@@ -1,4 +1,4 @@
-﻿# SMTeam Platform
+# SMTeam Platform
 
 Стартовый full-stack каркас для сайта команды SMTeam: проекты, роли USER/ADMIN, credentials auth, Google OAuth, Prisma и PostgreSQL.
 
@@ -40,3 +40,10 @@
 - GOOGLE_CLIENT_ID
 - GOOGLE_CLIENT_SECRET
 Кнопка входа через Google появляется автоматически только когда в env стоят реальные значения, а не плейсхолдеры.
+
+## Render Deploy
+- `render.yaml` уже добавлен в репозиторий.
+- Set DATABASE_URL and AUTH_SECRET on Render.
+- To reseed admin on Render, set ADMIN_SEED_PASSWORD and run npm run prisma:seed.
+- The service runs prisma migrate deploy before next start.
+- Set AUTH_URL only if you use a custom domain.

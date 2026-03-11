@@ -4,22 +4,32 @@ import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Role } from "@prisma/client";
-import { isGoogleOAuthConfigured } from "@/lib/env";
+import {
+  getAuthBaseUrl,
+  getGoogleOAuthConfig,
+  shouldTrustHost
+} from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { ensureGoogleUsername } from "@/lib/usernames";
 import { loginSchema } from "@/lib/validations/auth";
 import { normalizeUsername } from "@/lib/utils";
+
+const authBaseUrl = getAuthBaseUrl();
+
+if (authBaseUrl && !process.env.AUTH_URL) {
+  process.env.AUTH_URL = authBaseUrl;
+}
 
 const providers: any[] = [
   Credentials({
     name: "Email or username",
     credentials: {
       identifier: {
-        label: "Email РёР»Рё Р»РѕРіРёРЅ",
+        label: "Email or username",
         type: "text"
       },
       password: {
-        label: "РџР°СЂРѕР»СЊ",
+        label: "Password",
         type: "password"
       }
     },
@@ -72,17 +82,20 @@ const providers: any[] = [
   })
 ];
 
-if (isGoogleOAuthConfigured()) {
+const googleOAuth = getGoogleOAuthConfig();
+
+if (googleOAuth) {
   providers.unshift(
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      clientId: googleOAuth.clientId,
+      clientSecret: googleOAuth.clientSecret
     })
   );
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
+  trustHost: shouldTrustHost(),
   session: {
     strategy: "jwt"
   },
@@ -177,4 +190,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }
   }
 });
-

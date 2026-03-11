@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed"
   },
   "dependencies": {
@@ -36,4 +37,3 @@
     "seed": "tsx prisma/seed.ts"
   }
 }
-
