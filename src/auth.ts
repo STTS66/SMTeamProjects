@@ -1,9 +1,10 @@
-﻿import NextAuth from "next-auth";
+import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Role } from "@prisma/client";
+import { isGoogleOAuthConfigured } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import { ensureGoogleUsername } from "@/lib/usernames";
 import { loginSchema } from "@/lib/validations/auth";
@@ -14,11 +15,11 @@ const providers: any[] = [
     name: "Email or username",
     credentials: {
       identifier: {
-        label: "Email или логин",
+        label: "Email РёР»Рё Р»РѕРіРёРЅ",
         type: "text"
       },
       password: {
-        label: "Пароль",
+        label: "РџР°СЂРѕР»СЊ",
         type: "password"
       }
     },
@@ -71,7 +72,7 @@ const providers: any[] = [
   })
 ];
 
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (isGoogleOAuthConfigured()) {
   providers.unshift(
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

@@ -30,3 +30,13 @@
 6. Выполните npm.cmd run prisma:migrate -- --name init.
 7. Выполните npm.cmd run prisma:seed.
 8. Запустите проект через npm.cmd run dev.
+
+## Google OAuth
+
+Чтобы включить вход через Google, создайте OAuth Client ID в Google Cloud Console.
+Используйте callback URL для локальной разработки:
+- http://localhost:3000/api/auth/callback/google
+После этого вставьте реальные значения в .env:
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+Кнопка входа через Google появляется автоматически только когда в env стоят реальные значения, а не плейсхолдеры.
