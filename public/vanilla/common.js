@@ -176,33 +176,65 @@ export function dashboardFrame({ active, user, showAdmin, content }) {
     links.push({ href: "/admin", label: "Админ", key: "admin" });
   }
 
+  const offsets = ["18px", "-10px", "14px", "-6px", "10px"];
+  const activeIndex = Math.max(
+    links.findIndex((link) => link.key === active),
+    0
+  );
+
   return `
     <div class="dashboard-shell">
-      <header class="topbar">
-        <a class="brand-link" href="/projects">SMTeam</a>
-        <nav class="nav-strip">
-          ${links
-            .map(
-              (link) => `
-                <a
-                  class="nav-link${active === link.key ? " nav-link-active" : ""}"
-                  href="${link.href}"
-                >
-                  ${link.label}
-                </a>
-              `
-            )
-            .join("")}
-        </nav>
-        <div class="nav-user-block">
-          ${avatarMarkup(user?.image, user?.username || user?.email || "User", "sm")}
-          <span class="nav-username">${escapeHtml(user?.username || user?.email || "User")}</span>
-          <button class="button button-ghost" id="logout-button" type="button">Выйти</button>
-        </div>
-      </header>
-      <main class="page-shell">
-        ${content}
-      </main>
+      <div class="dashboard-layout">
+        <aside class="section-sidebar">
+          <a class="brand-link brand-link-sidebar" href="/projects">SMTeam</a>
+          <div class="section-sidebar-copy">
+            <p class="eyebrow">Навигация</p>
+            <h2>Переключайте разделы одним кликом</h2>
+            <p class="muted">
+              Вся основная работа команды собрана в одном переключателе.
+            </p>
+          </div>
+          <div class="section-switcher" aria-label="Разделы сайта">
+            <nav class="section-rail">
+              ${links
+                .map(
+                  (link, index) => `
+                    <a
+                      class="section-tab${active === link.key ? " section-tab-active" : ""}"
+                      href="${link.href}"
+                      style="--tab-offset: ${offsets[index] || "0px"};"
+                    >
+                      <span class="section-tab-label">${link.label}</span>
+                    </a>
+                  `
+                )
+                .join("")}
+            </nav>
+            <div class="section-dots" aria-hidden="true">
+              ${links
+                .map(
+                  (_, index) => `
+                    <span class="section-dot${index === activeIndex ? " section-dot-active" : ""}"></span>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
+          <div class="sidebar-user-card">
+            <div class="sidebar-user-head">
+              ${avatarMarkup(user?.image, user?.username || user?.email || "User", "md")}
+              <div class="stack-sm">
+                <strong class="nav-username">${escapeHtml(user?.username || user?.email || "User")}</strong>
+                <span class="muted">${escapeHtml(showAdmin ? "Администратор" : "Участник команды")}</span>
+              </div>
+            </div>
+            <button class="button button-ghost button-full" id="logout-button" type="button">Выйти</button>
+          </div>
+        </aside>
+        <main class="page-shell">
+          ${content}
+        </main>
+      </div>
     </div>
   `;
 }
