@@ -38,11 +38,22 @@ function renderAttachments(attachments) {
           }
 
           return `
-            <a class="project-file" href="${escapeAttribute(
-              file.publicUrl
-            )}" target="_blank" rel="noreferrer">
-              ${escapeHtml(file.fileName)}
-            </a>
+            <div class="project-file-row">
+              <a class="project-file" href="${escapeAttribute(
+                file.publicUrl
+              )}" target="_blank" rel="noreferrer">
+                ${escapeHtml(file.fileName)}
+              </a>
+              <a
+                class="button button-ghost project-download"
+                href="${escapeAttribute(file.publicUrl)}"
+                download="${escapeAttribute(file.fileName)}"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Скачать
+              </a>
+            </div>
           `;
         })
         .join("")}
