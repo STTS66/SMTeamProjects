@@ -192,59 +192,36 @@ export function dashboardFrame({ active, user, showAdmin, content }) {
     links.push({ href: "/admin", label: "Админ", key: "admin" });
   }
 
-  const offsets = ["18px", "-10px", "14px", "-6px", "10px"];
-  const activeIndex = Math.max(
-    links.findIndex((link) => link.key === active),
-    0
-  );
-
   return `
     <div class="dashboard-shell">
       <div class="dashboard-layout">
         <aside class="section-sidebar">
           <a class="brand-link brand-link-sidebar" href="/projects">SMTeam</a>
-          <div class="section-sidebar-copy">
+          <div class="section-group">
             <p class="eyebrow">Навигация</p>
-            <h2>Переключайте разделы одним кликом</h2>
-            <p class="muted">
-              Вся основная работа команды собрана в одном переключателе.
-            </p>
-          </div>
-          <div class="section-switcher" aria-label="Разделы сайта">
-            <nav class="section-rail">
+            <nav class="section-rail" aria-label="Разделы сайта">
               ${links
                 .map(
-                  (link, index) => `
+                  (link) => `
                     <a
-                      class="section-tab${active === link.key ? " section-tab-active" : ""}"
+                      class="section-link${active === link.key ? " section-link-active" : ""}"
                       href="${link.href}"
-                      style="--tab-offset: ${offsets[index] || "0px"};"
                     >
-                      <span class="section-tab-label">${link.label}</span>
+                      ${link.label}
                     </a>
                   `
                 )
                 .join("")}
-            </nav>
-            <div class="section-dots" aria-hidden="true">
-              ${links
-                .map(
-                  (_, index) => `
-                    <span class="section-dot${index === activeIndex ? " section-dot-active" : ""}"></span>
-                  `
-                )
-                .join("")}
-            </div>
           </div>
-          <div class="sidebar-user-card">
+          <div class="sidebar-user-block">
             <div class="sidebar-user-head">
-              ${avatarMarkup(user?.image, user?.username || user?.email || "User", "md")}
+              ${avatarMarkup(user?.image, user?.username || user?.email || "User", "sm")}
               <div class="stack-sm">
                 <strong class="nav-username">${escapeHtml(user?.username || user?.email || "User")}</strong>
                 <span class="muted">${escapeHtml(showAdmin ? "Администратор" : "Участник команды")}</span>
               </div>
             </div>
-            <button class="button button-ghost button-full" id="logout-button" type="button">Выйти</button>
+            <button class="logout-link" id="logout-button" type="button">Выйти</button>
           </div>
         </aside>
         <main class="page-shell">
