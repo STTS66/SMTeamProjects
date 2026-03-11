@@ -119,21 +119,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return false;
       }
 
-      if (databaseUser && account?.provider === "google") {
-        await ensureGoogleUsername(databaseUser.id, databaseUser.email, user.name);
-      }
-
-      if (databaseUser) {
-        await prisma.user.update({
-          where: {
-            id: databaseUser.id
-          },
-          data: {
-            lastSeenAt: new Date()
-          }
-        });
-      }
-
       return true;
     },
     async jwt({ token, user }) {
@@ -187,6 +172,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       return `${baseUrl}/projects`;
+    }
+  },
+  events: {
+    async signIn({ user, account }) {
+      if (!user.id || !user.email) {
+        return;
+      }
+
+      await prisma.user.update({
+        where: {
+          id: user.id
+        },
+        data: {
+          name: user.name ?? undefined,
+          lastSeenAt: new Date()
+        }
+      });
+
+      if (account?.provider === "google") {
+        await ensureGoogleUsername(user.id, user.email, user.name);
+      }
     }
   }
 });
