@@ -7,8 +7,8 @@ services:
     autoDeployTrigger: commit
     buildCommand: npm install --include=dev && npm run prisma:generate && npm run build
     preDeployCommand: npm run prisma:deploy
-    startCommand: npm start
-    healthCheckPath: /api/auth/session
+    startCommand: npx next start -H 0.0.0.0 -p $PORT
+    healthCheckPath: /login
     envVars:
       - key: NODE_VERSION
         value: 22.18.0
