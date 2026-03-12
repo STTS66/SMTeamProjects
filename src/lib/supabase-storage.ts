@@ -149,3 +149,28 @@ export async function uploadFileToSupabase(
     kind: resolveKind(mimeType)
   };
 }
+
+export async function removeFilesFromSupabase(storageKeys: string[]) {
+  const keysToRemove = storageKeys.filter(
+    (storageKey) => storageKey && !storageKey.startsWith("uploads/")
+  );
+
+  if (!keysToRemove.length) {
+    return;
+  }
+
+  const config = getSupabaseStorageConfig();
+
+  if (!config) {
+    return;
+  }
+
+  await ensureBucket();
+
+  const client = getSupabaseAdmin();
+  const { error } = await client.storage.from(config.bucket).remove(keysToRemove);
+
+  if (error) {
+    throw new Error(`Не удалось удалить файл из Supabase Storage: ${error.message}`);
+  }
+}

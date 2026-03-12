@@ -11,6 +11,7 @@ import {
 } from "/vanilla/common.js";
 
 const data = getBootstrap();
+const isAdmin = data.user?.role === "ADMIN";
 
 function renderAttachments(attachments) {
   if (!attachments?.length) {
@@ -61,11 +62,69 @@ function renderAttachments(attachments) {
   `;
 }
 
+function renderAdminControls(project) {
+  if (!isAdmin) {
+    return "";
+  }
+
+  return `
+    <div class="project-actions">
+      <button
+        class="button button-ghost"
+        type="button"
+        data-project-edit-toggle="${escapeAttribute(project.id)}"
+      >
+        Редактировать
+      </button>
+      <button
+        class="button button-danger"
+        type="button"
+        data-project-delete="${escapeAttribute(project.id)}"
+      >
+        Удалить
+      </button>
+    </div>
+  `;
+}
+
+function renderEditPanel(project) {
+  if (!isAdmin) {
+    return "";
+  }
+
+  return `
+    <form class="project-edit-panel" data-project-edit-form="${escapeAttribute(project.id)}" hidden>
+      <label class="field">
+        <span>Описание проекта</span>
+        <textarea class="textarea" name="description">${escapeHtml(project.description)}</textarea>
+      </label>
+      <label class="field">
+        <span>Новые файлы</span>
+        <input class="native-file" name="files" type="file" multiple />
+      </label>
+      <p class="helper-text">
+        Если выбрать новые файлы, текущие вложения будут заменены. Если поле пустое, изменится только описание.
+      </p>
+      <p class="error-text" data-project-edit-error="${escapeAttribute(project.id)}"></p>
+      <div class="project-actions">
+        <button class="button button-primary" type="submit">Сохранить</button>
+        <button
+          class="button button-ghost"
+          type="button"
+          data-project-edit-cancel="${escapeAttribute(project.id)}"
+        >
+          Отмена
+        </button>
+      </div>
+    </form>
+  `;
+}
+
 function renderProjectCard(project) {
   const authorName = project.author.username || project.author.email || "SMTeam";
 
   return `
-    <article class="project-card">
+    <article class="project-card" data-project-id="${escapeAttribute(project.id)}">
       <div class="project-head">
         <div class="project-author">
           ${avatarMarkup(project.author.image, authorName, "md")}
@@ -74,14 +133,15 @@ function renderProjectCard(project) {
             <div class="muted">${escapeHtml(formatDate(project.createdAt))}</div>
           </div>
         </div>
+        ${renderAdminControls(project)}
       </div>
-      <div>${escapeHtml(project.description)}</div>
+      <div class="project-description">${escapeHtml(project.description)}</div>
       ${renderAttachments(project.attachments)}
+      ${renderEditPanel(project)}
     </article>
   `;
 }
 
-const isAdmin = data.user?.role === "ADMIN";
 const projectsMarkup = data.projects?.length
   ? data.projects.map(renderProjectCard).join("")
   : `<section class="panel"><p class="muted">Пока нет проектов.</p></section>`;
@@ -156,4 +216,134 @@ document.getElementById("publish-form")?.addEventListener("submit", async (event
     errorNode.textContent =
       error instanceof Error ? error.message : "Не удалось опубликовать проект.";
   }
+});
+
+document.querySelectorAll("[data-project-edit-toggle]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const projectId = button.dataset.projectEditToggle;
+    const form = projectId
+      ? document.querySelector(`[data-project-edit-form="${projectId}"]`)
+      : null;
+
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const isHidden = form.hasAttribute("hidden");
+
+    if (isHidden) {
+      form.removeAttribute("hidden");
+      button.textContent = "Скрыть";
+      return;
+    }
+
+    form.setAttribute("hidden", "hidden");
+    button.textContent = "Редактировать";
+  });
+});
+
+document.querySelectorAll("[data-project-edit-cancel]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const projectId = button.dataset.projectEditCancel;
+    const form = projectId
+      ? document.querySelector(`[data-project-edit-form="${projectId}"]`)
+      : null;
+    const toggle = projectId
+      ? document.querySelector(`[data-project-edit-toggle="${projectId}"]`)
+      : null;
+
+    if (form instanceof HTMLFormElement) {
+      form.setAttribute("hidden", "hidden");
+      form.reset();
+    }
+
+    if (toggle instanceof HTMLButtonElement) {
+      toggle.textContent = "Редактировать";
+    }
+  });
+});
+
+document.querySelectorAll("[data-project-edit-form]").forEach((form) => {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const projectId = form.dataset.projectEditForm;
+    const errorNode = projectId
+      ? document.querySelector(`[data-project-edit-error="${projectId}"]`)
+      : null;
+    const submit = form.querySelector('button[type="submit"]');
+
+    if (
+      !projectId ||
+      !(errorNode instanceof HTMLElement) ||
+      !(submit instanceof HTMLButtonElement)
+    ) {
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = "Сохраняем...";
+    errorNode.textContent = "";
+
+    try {
+      await requestJson(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        body: new FormData(form)
+      });
+
+      window.location.reload();
+    } catch (error) {
+      submit.disabled = false;
+      submit.textContent = "Сохранить";
+      errorNode.textContent =
+        error instanceof Error ? error.message : "Не удалось обновить проект.";
+    }
+  });
+});
+
+document.querySelectorAll("[data-project-delete]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const projectId = button.dataset.projectDelete;
+
+    if (!projectId) {
+      return;
+    }
+
+    if (!window.confirm("Удалить этот проект? Это действие нельзя отменить.")) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Удаляем...";
+
+    try {
+      await requestJson(`/api/projects/${projectId}`, {
+        method: "DELETE"
+      });
+
+      window.location.reload();
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "Удалить";
+      window.alert(
+        error instanceof Error ? error.message : "Не удалось удалить проект."
+      );
+    }
+  });
 });
