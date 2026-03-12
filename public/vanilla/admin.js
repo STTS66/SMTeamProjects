@@ -14,20 +14,22 @@ function renderUsers(users) {
     .map(
       (user) => `
         <div class="user-row">
-          <div class="stack-sm">
+          <div class="stack-sm user-row-meta">
             <strong>${escapeHtml(user.username || user.email)}</strong>
             <div class="muted">
               ${escapeHtml(user.role)} • проектов: ${escapeHtml(String(user.projectsCount || 0))}
             </div>
           </div>
-          <button
-            class="button ${user.isBanned ? "button-ghost" : "button-danger"}"
-            data-user-id="${escapeHtml(user.id)}"
-            data-action="${user.isBanned ? "unban" : "ban"}"
-            ${user.isCurrentAdmin ? "disabled" : ""}
-          >
-            ${user.isBanned ? "Разбанить" : "Забанить"}
-          </button>
+          <div class="user-row-action">
+            <button
+              class="button ${user.isBanned ? "button-ghost" : "button-danger"}"
+              data-user-id="${escapeHtml(user.id)}"
+              data-action="${user.isBanned ? "unban" : "ban"}"
+              ${user.isCurrentAdmin ? "disabled" : ""}
+            >
+              ${user.isBanned ? "Разбанить" : "Забанить"}
+            </button>
+          </div>
         </div>
       `
     )
