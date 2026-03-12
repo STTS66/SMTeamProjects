@@ -52,6 +52,37 @@ textarea {
   min-height: 100vh;
 }
 
+.blocked-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.blocked-card,
+.blocked-inline {
+  display: grid;
+  gap: 16px;
+}
+
+.blocked-card {
+  width: min(100%, 560px);
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 107, 107, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(255, 107, 107, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(16, 21, 34, 0.95), rgba(10, 16, 28, 0.92));
+  box-shadow: var(--shadow);
+}
+
+.blocked-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .auth-shell {
   display: grid;
   grid-template-columns: minmax(320px, 1fr) minmax(360px, 520px);

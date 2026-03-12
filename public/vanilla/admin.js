@@ -4,6 +4,7 @@ import {
   getBootstrap,
   mount,
   requestJson,
+  startAccountStatusWatcher,
   wireLogout
 } from "/vanilla/common.js";
 
@@ -67,6 +68,7 @@ mount(
 );
 
 wireLogout();
+startAccountStatusWatcher();
 
 document.querySelectorAll("[data-user-id]").forEach((button) => {
   button.addEventListener("click", async () => {

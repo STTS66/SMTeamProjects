@@ -6,6 +6,7 @@ import {
   getBootstrap,
   mount,
   requestJson,
+  startAccountStatusWatcher,
   wireLogout
 } from "/vanilla/common.js";
 
@@ -53,6 +54,7 @@ mount(
 );
 
 wireLogout();
+startAccountStatusWatcher();
 
 let previewUrl = null;
 

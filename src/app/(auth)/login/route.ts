@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { isGoogleOAuthConfigured } from "@/lib/env";
+import { getSupportBotUrl, isGoogleOAuthConfigured } from "@/lib/env";
 import { htmlPageResponse, redirectTo } from "@/lib/vanilla-page";
 
 export async function GET(request: Request) {
@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     data: {
       googleEnabled: isGoogleOAuthConfigured(),
       error: url.searchParams.get("error") ?? "",
-      callbackUrl: url.searchParams.get("callbackUrl") ?? "/projects"
+      callbackUrl: url.searchParams.get("callbackUrl") ?? "/projects",
+      supportBotUrl: getSupportBotUrl()
     }
   });
 }

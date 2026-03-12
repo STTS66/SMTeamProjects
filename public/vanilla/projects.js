@@ -7,6 +7,7 @@ import {
   getBootstrap,
   mount,
   requestJson,
+  startAccountStatusWatcher,
   wireLogout
 } from "/vanilla/common.js";
 
@@ -217,6 +218,7 @@ mount(
 );
 
 wireLogout();
+startAccountStatusWatcher();
 
 document.getElementById("publish-form")?.addEventListener("submit", async (event) => {
   event.preventDefault();

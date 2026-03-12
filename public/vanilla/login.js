@@ -1,5 +1,6 @@
 import {
   authFrame,
+  escapeAttribute,
   escapeHtml,
   getBootstrap,
   getLoginErrorMessage,
@@ -9,6 +10,24 @@ import {
 
 const data = getBootstrap();
 const callbackUrl = data.callbackUrl || "/projects";
+const blockedSupportNote =
+  data.error === "AccessDenied"
+    ? `
+      <div class="blocked-inline">
+        <p class="helper-text">
+          Если вы считаете блокировку ошибкой, напишите в поддержку.
+        </p>
+        <a
+          class="button button-ghost"
+          href="${escapeAttribute(data.supportBotUrl || "https://t.me/smteam_support_bot")}"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Поддержка в Telegram
+        </a>
+      </div>
+    `
+    : "";
 
 mount(
   authFrame({
@@ -39,6 +58,7 @@ mount(
             : `<p class="helper-text">Google OAuth можно включить позже через env-переменные.</p>`
         }
         <p class="footer-note">Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+        ${blockedSupportNote}
       </div>
     `
   })

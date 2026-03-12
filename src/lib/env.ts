@@ -54,3 +54,10 @@ export function getSupabaseStorageConfig() {
     bucket
   };
 }
+
+export function getSupportBotUrl() {
+  return (
+    getRealValue(process.env.SUPPORT_BOT_URL, process.env.NEXT_PUBLIC_SUPPORT_BOT_URL) ??
+    "https://t.me/smteam_support_bot"
+  );
+}

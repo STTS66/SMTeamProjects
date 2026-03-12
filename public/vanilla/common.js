@@ -121,6 +121,67 @@ export function mount(html) {
   bindAvatarFallbacks(root);
 }
 
+export function blockedFrame(supportBotUrl) {
+  const supportUrl = escapeAttribute(supportBotUrl || "https://t.me/smteam_support_bot");
+
+  return `
+    <div class="blocked-shell">
+      <section class="blocked-card">
+        <p class="eyebrow">Доступ ограничен</p>
+        <h1>Вас заблокировали</h1>
+        <p class="hero-copy">
+          Ваш доступ к SMTeam ограничен администратором. Напишите в поддержку, чтобы уточнить причину и запросить разблокировку.
+        </p>
+        <div class="blocked-actions">
+          <a class="button button-primary" href="${supportUrl}" target="_blank" rel="noreferrer">
+            Написать в поддержку
+          </a>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+export function mountBlockedState(supportBotUrl) {
+  mount(blockedFrame(supportBotUrl));
+}
+
+export function startAccountStatusWatcher() {
+  const poll = async () => {
+    try {
+      const response = await fetch("/api/account-status", {
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data?.isBanned) {
+        if (timerId) {
+          window.clearInterval(timerId);
+        }
+
+        mountBlockedState(data.supportBotUrl);
+      }
+    } catch {
+      // Keep the current UI and retry on the next interval.
+    }
+  };
+
+  const timerId = window.setInterval(() => {
+    void poll();
+  }, 15000);
+
+  void poll();
+
+  return () => {
+    window.clearInterval(timerId);
+  };
+}
+
 export async function getCsrfToken() {
   const response = await fetch("/api/auth/csrf", {
     cache: "no-store"
