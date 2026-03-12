@@ -13,15 +13,19 @@ import {
 const data = getBootstrap();
 const isAdmin = data.user?.role === "ADMIN";
 
-function renderAttachments(attachments) {
-  if (!attachments?.length) {
+function renderAttachments(project) {
+  if (!project.attachments?.length) {
     return "";
   }
 
   return `
     <div class="project-media">
-      ${attachments
+      ${project.attachments
         .map((file) => {
+          const downloadUrl = `/api/projects/${encodeURIComponent(
+            project.id
+          )}/attachments/${encodeURIComponent(file.id)}`;
+
           if (file.kind === "IMAGE") {
             return `<img class="project-image" src="${escapeAttribute(
               file.publicUrl
@@ -40,17 +44,13 @@ function renderAttachments(attachments) {
 
           return `
             <div class="project-file-row">
-              <a class="project-file" href="${escapeAttribute(
-                file.publicUrl
-              )}" target="_blank" rel="noreferrer">
+              <a class="project-file" href="${escapeAttribute(downloadUrl)}">
                 ${escapeHtml(file.fileName)}
               </a>
               <a
                 class="button button-ghost project-download"
-                href="${escapeAttribute(file.publicUrl)}"
+                href="${escapeAttribute(downloadUrl)}"
                 download="${escapeAttribute(file.fileName)}"
-                target="_blank"
-                rel="noreferrer"
               >
                 Скачать
               </a>
@@ -170,7 +170,7 @@ function renderProjectCard(project) {
         ${renderAdminControls(project)}
       </div>
       <div class="project-description">${escapeHtml(project.description)}</div>
-      ${renderAttachments(project.attachments)}
+      ${renderAttachments(project)}
       ${renderEditPanel(project)}
     </article>
   `;
