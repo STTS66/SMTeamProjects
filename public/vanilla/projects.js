@@ -87,6 +87,36 @@ function renderAdminControls(project) {
   `;
 }
 
+function renderEditableAttachments(project) {
+  if (!project.attachments?.length) {
+    return `<p class="helper-text">У проекта пока нет вложений.</p>`;
+  }
+
+  return `
+    <div class="project-attachment-admin-list">
+      ${project.attachments
+        .map(
+          (file) => `
+            <div class="project-attachment-admin-item">
+              <div class="project-attachment-admin-meta">
+                <strong>${escapeHtml(file.fileName)}</strong>
+                <span class="muted">${escapeHtml(file.kind)}</span>
+              </div>
+              <button
+                class="button button-danger"
+                type="button"
+                data-project-attachment-delete="${escapeAttribute(project.id)}:${escapeAttribute(file.id)}"
+              >
+                Удалить файл
+              </button>
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function renderEditPanel(project) {
   if (!isAdmin) {
     return "";
@@ -105,6 +135,10 @@ function renderEditPanel(project) {
       <p class="helper-text">
         Если выбрать новые файлы, текущие вложения будут заменены. Если поле пустое, изменится только описание.
       </p>
+      <div class="stack-sm">
+        <span class="section-title">Текущие вложения</span>
+        ${renderEditableAttachments(project)}
+      </div>
       <p class="error-text" data-project-edit-error="${escapeAttribute(project.id)}"></p>
       <div class="project-actions">
         <button class="button button-primary" type="submit">Сохранить</button>
@@ -343,6 +377,47 @@ document.querySelectorAll("[data-project-delete]").forEach((button) => {
       button.textContent = "Удалить";
       window.alert(
         error instanceof Error ? error.message : "Не удалось удалить проект."
+      );
+    }
+  });
+});
+
+document.querySelectorAll("[data-project-attachment-delete]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    if (!(button instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const descriptor = button.dataset.projectAttachmentDelete;
+
+    if (!descriptor) {
+      return;
+    }
+
+    const [projectId, attachmentId] = descriptor.split(":");
+
+    if (!projectId || !attachmentId) {
+      return;
+    }
+
+    if (!window.confirm("Удалить только этот файл из проекта?")) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Удаляем...";
+
+    try {
+      await requestJson(`/api/projects/${projectId}/attachments/${attachmentId}`, {
+        method: "DELETE"
+      });
+
+      window.location.reload();
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "Удалить файл";
+      window.alert(
+        error instanceof Error ? error.message : "Не удалось удалить файл."
       );
     }
   });

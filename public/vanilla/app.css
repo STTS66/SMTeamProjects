@@ -264,6 +264,28 @@ textarea {
   display: none;
 }
 
+.project-attachment-admin-list {
+  display: grid;
+  gap: 12px;
+}
+
+.project-attachment-admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.project-attachment-admin-meta {
+  display: grid;
+  gap: 4px;
+}
+
 .project-media {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
@@ -509,6 +531,7 @@ textarea {
   .project-head,
   .project-author,
   .project-actions,
+  .project-attachment-admin-item,
   .user-row {
     flex-direction: column;
     align-items: stretch;
